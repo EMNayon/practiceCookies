@@ -1,0 +1,78 @@
+*** What is cookie
+-- A cookie is small text file and mostly used to identify a user.
+
+*** How to create cookie 
+-- Setcookie(name,value, time)
+
+*** How to remove cookie 
+-- Pass old time in time parameters of cookie 
+** Cookie Examples 
+-- PHP Rating script
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<?php
+    // setcookie('rate','php',time()+30);
+    // echo "<pre>";
+    // print_r($_COOKIE);
+    // setcookie('rate','php',888);
+    try{
+        $con = new PDO('mysql:host=localhost; dbname=cookie','root','loveispain');
+    }catch(PDOException $e){
+        echo $e->getMessage();
+    }
+
+    if(isset($_POST['rate'])){
+        $rate = $_POST['rate'];
+
+        if(isset($_COOKIE['rate'])){
+            echo "Already voted for ".$_COOKIE['rate'];
+        }else{
+            setcookie('rate',$rate,time()+5);
+            $update_sql = "update rate set option_value = option_value + 1 where option='$rate'";
+            $update_stmt = $con->prepare($update_sql);
+            $update_stmt->execute();
+            echo "Thank you for rating";
+        }
+    }
+
+    $sql = "select * from rate";
+    $stml = $con->prepare($sql);
+    $stml->execute();
+
+    $data = $stml->fetchAll(PDO::FETCH_ASSOC);
+
+    // echo "<pre>";
+    // print_r($data);
+?>
+
+<form action="" method="post">
+    <table>
+        <tr>
+            <td>
+                <input type="submit" name="rate" value="<?php echo $data['0']['option'] ?>">
+                (<?php echo $data['0']['option_value'] ?>)
+            </td>
+            <td>
+                vs
+            </td>
+            <td>
+                <input type="submit" name="rate" value="<?php echo $data['1']['option'] ?>">
+                (<?php echo $data['1']['option_value'] ?>)
+            </td>
+        </tr>
+    </table>
+</form>
